@@ -12,8 +12,8 @@
         <activity
             android:name=".AddNewItem"
             android:exported="false"
-            android:theme="@style/EditorTheme"
-            android:parentActivityName=".AddNewItem">
+            android:theme="@style/AppTheme"
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
@@ -21,8 +21,11 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-
+            android:parentActivityName=".MainActivity"
             >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

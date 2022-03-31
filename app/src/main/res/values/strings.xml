@@ -16,5 +16,8 @@
     <string name="plus">+</string>
     <string name="minus">-</string>
     <string name="cross">X</string>
+    <string name="editor_deletion_Work_failed">Deletion Failed</string>
+    <string name="editor_deletion_Work_successful">Deletion Sucessful</string>
+    <string name="task_already_completed">Task Already Fully Completed</string>
 
 </resources>

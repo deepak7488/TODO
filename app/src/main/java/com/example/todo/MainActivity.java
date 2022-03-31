@@ -1,7 +1,7 @@
 package com.example.todo;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -11,33 +11,30 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
+
 import com.example.todo.data.WorkContract;
-import com.example.todo.data.WorkDbHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,View.OnClickListener {
 
-    private WorkDbHelper mDbHelper;
+
     private Cursor mCursor=null;
-    private ListView WorkListView=null;
     private WorkCursorAdapter mWorkCursorAdapter=null;
     private static final int WORK_LOADER=0;
-    private static final int EXIST_WORK_LOADER=1;
     private Button mIncrement;
     private Button mDecrement;
     private Button mDelete;
     private Uri mCurrentPetUri;
-    private int id=0;
+    private int ID=0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,59 +47,37 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             Intent intent = new Intent(MainActivity.this, AddNewItem.class);
             startActivity(intent);
         });
-        mIncrement=findViewById(R.id.increment);
-        mDecrement=findViewById(R.id.decrement);
-        mDelete=findViewById(R.id.delete);
-        WorkListView = (ListView) findViewById(R.id.list_view);
+
+
+        ListView workListView = (ListView) findViewById(R.id.list_view);
         mWorkCursorAdapter=new WorkCursorAdapter(this,null);
-        WorkListView.setAdapter(mWorkCursorAdapter);
-        WorkListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
-                mCurrentPetUri=ContentUris.withAppendedId(WorkContract.WorkEntry.CONTENT_URI,id);
-                //listView.get
-                showPopUp(view,id);
-            }
+        workListView.setAdapter(mWorkCursorAdapter);
+        workListView.setOnItemClickListener((listView, view, position, id) -> {
+            mCurrentPetUri=ContentUris.withAppendedId(WorkContract.WorkEntry.CONTENT_URI,id);
+            ID=(int)position;
+            showPopUp();
         });
         getLoaderManager().initLoader(WORK_LOADER,null,this);
 
-//        mDecrement.setOnClickListener(this);
-//        mDelete.setOnClickListener(this);
-    }
-    public void showPopUp(View view,long id) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater layoutInflater = getLayoutInflater();
 
+    }
+    public void showPopUp() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //this is custom dialog
         //custom_popup_dialog contains textview only
-        View customView = layoutInflater.inflate(R.layout.custom_popup_dialog, null);
-            mIncrement=customView.findViewById(R.id.increment);
-            if(mIncrement==null){
-                Log.v("testing","Hello i am null");
-            }
-            else{
-            mIncrement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view)
-            {
-                setIncrement(id);
-            }
-        }
-        );}
-//        // reference the textview of custom_popup_dialog
-//        TextView tv = (TextView) customView.findViewById(R.id.tvpopup);
-//
-//
-//        //this textview is from the adapter
-//        TextView text = (TextView) view.findViewById(R.id.textView);
-//        // get the text of the view clicked
-//        String day = text.getText().toString();
-//        //set the text to the view of custom_popop_dialog.
-//        tv.setText(day);
-//
+        View customView = getLayoutInflater().inflate(R.layout.custom_popup_dialog, null);
+        mIncrement=customView.findViewById(R.id.increment);
+        mDecrement=customView.findViewById(R.id.decrement);
+        mDelete=customView.findViewById(R.id.delete);
+        mIncrement.setOnClickListener(this);
+        mDecrement.setOnClickListener(this);
+        mDelete.setOnClickListener(this);
         builder.setView(customView);
         builder.create();
         builder.show();
+
+
+
 
     }
     @Override
@@ -113,84 +88,48 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 WorkContract.WorkEntry.COLUMN_WORK_INITIAL_VALUE,
                 WorkContract.WorkEntry.COLUMN_WORK_FINAL_VALUE
         };
-        String selection=null;
-        String[] selectionArgs=null;
-        id=i;
-        if(i==1){
-            selection = WorkContract.WorkEntry._ID + "=?";
-            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(mCurrentPetUri))};
-        }
+
         return new CursorLoader(this //parent activity context
                 , WorkContract.WorkEntry.CONTENT_URI //provider content URI to query
                 ,projection  //Column to include in a resulting cursor
-                ,selection //no selection clause
-                ,selectionArgs //no selection argumnet
+                ,null //no selection clause
+                ,null //no selection argument
                 ,null); //default sort order
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        if(id==0){
+
         mWorkCursorAdapter.swapCursor(data);
-        }
-//        else{
+
             mCursor=data;
-//        }
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
-        if(id==0){
+
         mWorkCursorAdapter.swapCursor(null);
-        }
-       // mCurrentPetUri=null;
-    }
-    private void insertWork() {
 
-
-        // Create a ContentValues object where column names are the keys,
-        // and Toto's Work attributes are the values.
-        ContentValues values = new ContentValues();
-        values.put(WorkContract.WorkEntry.COLUMN_WORK_NAME, "Toto");
-        values.put(WorkContract.WorkEntry.COLUMN_WORK_INITIAL_VALUE, 60);
-        values.put(WorkContract.WorkEntry.COLUMN_WORK_FINAL_VALUE, 100);
-
-        // Insert a new row for Toto in the database, returning the ID of that new row.
-        // The first argument for db.insert() is the Works table name.
-        // The second argument provides the name of a column in which the framework
-        // can insert NULL in the event that the ContentValues is empty (if
-        // this is set to "null", then the framework will not insert a row when
-        // there are no values).
-        // The third argument is the ContentValues object containing the info for Toto.
-        Uri newUri = getContentResolver().insert(WorkContract.WorkEntry.CONTENT_URI, values);
-        // Show a toast message depending on whether or not the insertion was successful
-        if (newUri== null) {
-            // If the new content URI is null, then there was an error with insertion.
-            Toast.makeText(this, getString(R.string.editor_insert_Work_failed),
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            // Otherwise, the insertion was successful and we can display a toast.
-            Toast.makeText(this, getString(R.string.editor_insert_Work_successful),
-                    Toast.LENGTH_SHORT).show();
-        }
     }
 
-    public void setIncrement(long id){
-       // getLoaderManager().initLoader(EXIST_WORK_LOADER,null,this);
+    public void setIncrement(){
         ContentValues values = new ContentValues();
         if(mCursor!=null){
-            mCursor.moveToPosition((int)(id-1));
-
+            mCursor.moveToPosition(ID);
             int ans= mCursor.getInt(mCursor.getColumnIndexOrThrow(WorkContract.WorkEntry.COLUMN_WORK_INITIAL_VALUE))+1;
-            int fin=mCursor.getInt(mCursor.getColumnIndexOrThrow(WorkContract.WorkEntry.COLUMN_WORK_FINAL_VALUE));
+            int fin= mCursor.getInt(mCursor.getColumnIndexOrThrow(WorkContract.WorkEntry.COLUMN_WORK_FINAL_VALUE));
+            if(ans>fin){
+                Toast.makeText(this, getString(R.string.task_already_completed),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
             values.put(WorkContract.WorkEntry.COLUMN_WORK_INITIAL_VALUE, ans);
-           // progressBar.setMax(final_value);
             int rowsAffected=0;
             if(mCurrentPetUri!=null)
             rowsAffected = getContentResolver().update(mCurrentPetUri, values, null, null);
-            //mCurrentPetUri=null;
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
                 // If no rows were affected, then there was an error with the update.
@@ -203,27 +142,79 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 Toast.makeText(this, getString(R.string.editor_update_Work_successful),
                         Toast.LENGTH_SHORT).show();
 
-                //getLoaderManager().initLoader(WORK_LOADER,null,this);
             }
-           // mCursor=null;
 
         }
 
     }
-//
-//    @Override
-//    public void onClick(View view) {
-//        switch (view.getId()) {
-//            case R.id.increment:
-//
-//                break;
-//
-//            case R.id.decrement:
-//                break;
-//            case R.id.delete:
-//                break;
-//            default:
-//                break;
-//        }
-//    }
+    public void setDecrement(){
+        ContentValues values = new ContentValues();
+        if(mCursor!=null){
+            mCursor.moveToPosition(ID);
+            int ans= mCursor.getInt(mCursor.getColumnIndexOrThrow(WorkContract.WorkEntry.COLUMN_WORK_INITIAL_VALUE))-1;
+            int fin= mCursor.getInt(mCursor.getColumnIndexOrThrow(WorkContract.WorkEntry.COLUMN_WORK_FINAL_VALUE));
+            if(ans>fin || ans<0){
+                Toast.makeText(this, getString(R.string.task_already_completed),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            values.put(WorkContract.WorkEntry.COLUMN_WORK_INITIAL_VALUE, ans);
+            int rowsAffected=0;
+            if(mCurrentPetUri!=null)
+                rowsAffected = getContentResolver().update(mCurrentPetUri, values, null, null);
+            // Show a toast message depending on whether or not the update was successful.
+            if (rowsAffected == 0) {
+                // If no rows were affected, then there was an error with the update.
+                Toast.makeText(this, getString(R.string.editor_update_Work_failed),
+                        Toast.LENGTH_SHORT).show();
+
+            } else {
+                mWorkCursorAdapter.notifyDataSetChanged();
+                // Otherwise, the update was successful and we can display a toast.
+                Toast.makeText(this, getString(R.string.editor_update_Work_successful),
+                        Toast.LENGTH_SHORT).show();
+
+            }
+
+        }
+
+    }
+    public void mSetDelete(){
+
+            int rowsAffected;
+            rowsAffected = getContentResolver().delete(mCurrentPetUri,  null, null);
+            // Show a toast message depending on whether or not the update was successful.
+            if (rowsAffected == 0) {
+                Toast.makeText(this, getString(R.string.editor_deletion_Work_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                mWorkCursorAdapter.notifyDataSetChanged();
+                Toast.makeText(this, getString(R.string.editor_deletion_Work_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
+
+
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.increment:
+                setIncrement();
+                break;
+            case R.id.decrement:
+                setDecrement();
+                break;
+            case R.id.delete:
+                mSetDelete();
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(intent);
+
+                break;
+            default:
+                break;
+        }
+    }
 }
+
