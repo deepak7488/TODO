@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">TODO</string>
+    <string name="todo">TODO</string>
+    <string name="editor_insert_Work_failed">INSERTION FAILED</string>
+    <string name="editor_insert_Work_successful">iNSERTED SUCCESSFUL</string>
+    <string name="task_name">Task Name</string>
+    <string name="initial_value">Initial Value</string>
+    <string name="final_value">Final Value</string>
+    <string name="save">Save</string>
+    <string name="enter_work_name">Enter Work Name</string>
+    <string name="enter_initial_progress">Enter Initial Progress</string>
+    <string name="enter_final_progress">Enter Final Progress</string>
+    <string name="add_work">Add Work</string>
+    <string name="editor_update_Work_failed">Update Work Failed</string>
+    <string name="editor_update_Work_successful">Update Work Successful</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="cross">X</string>
+
+</resources>
