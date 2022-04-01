@@ -6,36 +6,53 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:columnCount="20"
         android:orientation="horizontal"
+        android:background="@color/colorAccent"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:padding="16dp"
        >
 
         <Button
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:text="@string/plus"
             android:layout_weight="5"
+            android:textSize="48sp"
             android:id="@+id/increment"
-            android:layout_gravity="right|top" />
+            android:background="@color/tan_background"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            />
         <Button
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:text="@string/cross"
             android:layout_weight="5"
+            android:background="@color/tan_background"
+            android:textSize="48sp"
             android:id="@+id/delete"
-            android:layout_gravity="right|top"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+
              />
         <Button
             android:layout_weight="5"
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:text="@string/minus"
             android:id="@+id/decrement"
-            android:layout_gravity="right|top"
+            android:textSize="48sp"
+            android:background="@color/tan_background"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             />
     </LinearLayout>
 </RelativeLayout>

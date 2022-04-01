@@ -8,7 +8,9 @@
     android:orientation="vertical"
     android:padding="@dimen/activity_margin"
     android:background="@color/tan_background"
-    tools:context=".AddNewItem">
+    tools:context=".AddNewItem"
+    android:layout_marginTop="4dp"
+    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +22,7 @@
         android:fontFamily="sans-serif-medium"
         android:textAppearance="?android:textAppearanceMedium"
         android:layout_weight="10"
-        android:textSize="48dp"
+        android:textSize="36sp"
         tools:text="hello"
         android:textColor="#2B3D4D"  />
 
@@ -30,7 +32,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif"
         android:layout_weight="5"
-        android:textSize="48dp"
+        android:textSize="36sp"
         android:textAppearance="?android:textAppearanceSmall"
         tools:text="50/100"
         android:textColor="#2B3D4D"  />
@@ -39,10 +41,9 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleY="1"
+        android:scaleY="0.5"
         android:id="@+id/progress"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:paddingTop="8dp"
         android:max="100"
         android:progress="50"
         android:progressDrawable="@drawable/purple_progress"

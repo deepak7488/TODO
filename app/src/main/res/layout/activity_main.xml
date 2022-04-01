@@ -11,7 +11,7 @@
         android:id="@+id/list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/activity_margin"/>
+       />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -23,6 +23,7 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_baseline_add_circle_outline_24"
+        android:background="@color/white"
         android:contentDescription="@string/todo" />
 
   </RelativeLayout>
