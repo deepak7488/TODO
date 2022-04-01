@@ -2,7 +2,7 @@
     <string name="app_name">TODO</string>
     <string name="todo">TODO</string>
     <string name="editor_insert_Work_failed">INSERTION FAILED</string>
-    <string name="editor_insert_Work_successful">iNSERTED SUCCESSFUL</string>
+    <string name="editor_insert_Work_successful">INSERTED SUCCESSFUL</string>
     <string name="task_name">Task Name</string>
     <string name="initial_value">Initial Value</string>
     <string name="final_value">Final Value</string>

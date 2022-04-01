@@ -20,7 +20,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
- * API Contract for the Pets app.
+ * API Contract for the Works app.
  */
 public final class WorkContract {
 
@@ -44,40 +44,35 @@ public final class WorkContract {
 
     /**
      * Possible path (appended to base content URI for possible URI's)
-     * For instance, content://com.example.android.pets/pets/ is a valid path for
-     * looking at pet data. content://com.example.android.pets/staff/ will fail,
+     * For instance, content://com.example.android.Works/Works/ is a valid path for
+     * looking at Work data. content://com.example.android.Works/staff/ will fail,
      * as the ContentProvider hasn't been given any information on what to do with "staff".
      */
     public static final String PATH_WORKS = "works";
 
     /**
-     * Inner class that defines constant values for the pets database table.
-     * Each entry in the table represents a single pet.
+     * Inner class that defines constant values for the Works database table.
+     * Each entry in the table represents a single Work.
      */
     public static final class WorkEntry implements BaseColumns {
 
-        /** Name of database table for pets */
+        /** Name of database table for Works */
         public final static String TABLE_NAME = "works";
 
-        /**
-         * Unique ID number for the pet (only for use in the database table).
-         *
-         * Type: INTEGER
-         */
-        /** The content URI to access the pet data in the provider */
+        /** The content URI to access the Work data in the provider */
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_WORKS);
 
         public final static String _ID = BaseColumns._ID;
 
         /**
-         * Name of the pet.
+         * Name of the Work.
          *
          * Type: TEXT
          */
         public final static String COLUMN_WORK_NAME ="name";
 
         /**
-         * Breed of the pet.
+         * Breed of the Work.
          *
          * Type: TEXT
          */
@@ -86,27 +81,17 @@ public final class WorkContract {
         public final static String COLUMN_WORK_FINAL_VALUE = "final_value";
 
 
-//        public static final int GENDER_UNKNOWN = 0;
-//        public static final int GENDER_MALE = 1;
-//        public static final int GENDER_FEMALE = 2;
         /**
-         * The MIME type of the {@link #CONTENT_URI} for a list of pets.
+         * The MIME type of the {@link #CONTENT_URI} for a list of Works.
          */
         public static final String CONTENT_LIST_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WORKS;
 
         /**
-         * The MIME type of the {@link #CONTENT_URI} for a single pet.
+         * The MIME type of the {@link #CONTENT_URI} for a single Work.
          */
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WORKS;
-
-//        public static boolean isValidGender(int gender) {
-//            if (gender == GENDER_UNKNOWN || gender == GENDER_MALE || gender == GENDER_FEMALE) {
-//                return true;
-//            }
-//            return false;
-//        }
 
 
     }

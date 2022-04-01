@@ -1,7 +1,6 @@
 package com.example.todo;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -18,7 +17,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NavUtils;
 
 import com.example.todo.data.WorkContract;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -29,11 +27,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private Cursor mCursor=null;
     private WorkCursorAdapter mWorkCursorAdapter=null;
     private static final int WORK_LOADER=0;
-    private Button mIncrement;
-    private Button mDecrement;
-    private Button mDelete;
-    private Uri mCurrentPetUri;
+    private Uri mCurrentWorkUri;
     private int ID=0;
+    private Toast toast;
 
 
     @Override
@@ -53,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mWorkCursorAdapter=new WorkCursorAdapter(this,null);
         workListView.setAdapter(mWorkCursorAdapter);
         workListView.setOnItemClickListener((listView, view, position, id) -> {
-            mCurrentPetUri=ContentUris.withAppendedId(WorkContract.WorkEntry.CONTENT_URI,id);
+            mCurrentWorkUri=ContentUris.withAppendedId(WorkContract.WorkEntry.CONTENT_URI,id);
             ID=(int)position;
             showPopUp();
         });
@@ -66,9 +62,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //this is custom dialog
         //custom_popup_dialog contains textview only
         View customView = getLayoutInflater().inflate(R.layout.custom_popup_dialog, null);
-        mIncrement=customView.findViewById(R.id.increment);
-        mDecrement=customView.findViewById(R.id.decrement);
-        mDelete=customView.findViewById(R.id.delete);
+        Button mIncrement = customView.findViewById(R.id.increment);
+        Button mDecrement = customView.findViewById(R.id.decrement);
+        Button mDelete = customView.findViewById(R.id.delete);
         mIncrement.setOnClickListener(this);
         mDecrement.setOnClickListener(this);
         mDelete.setOnClickListener(this);
@@ -122,27 +118,35 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             int ans= mCursor.getInt(mCursor.getColumnIndexOrThrow(WorkContract.WorkEntry.COLUMN_WORK_INITIAL_VALUE))+1;
             int fin= mCursor.getInt(mCursor.getColumnIndexOrThrow(WorkContract.WorkEntry.COLUMN_WORK_FINAL_VALUE));
             if(ans>fin){
-                Toast.makeText(this, getString(R.string.task_already_completed),
-                        Toast.LENGTH_SHORT).show();
+                if(toast!=null)
+                    toast.cancel();
+              toast=  Toast.makeText(this, getString(R.string.task_already_completed),
+                        Toast.LENGTH_SHORT);
+              toast.show();
                 return;
             }
             values.put(WorkContract.WorkEntry.COLUMN_WORK_INITIAL_VALUE, ans);
             int rowsAffected=0;
-            if(mCurrentPetUri!=null)
-            rowsAffected = getContentResolver().update(mCurrentPetUri, values, null, null);
+            if(mCurrentWorkUri!=null)
+            rowsAffected = getContentResolver().update(mCurrentWorkUri, values, null, null);
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
+                if(toast!=null)
+                    toast.cancel();
                 // If no rows were affected, then there was an error with the update.
-                Toast.makeText(this, getString(R.string.editor_update_Work_failed),
-                        Toast.LENGTH_SHORT).show();
+                toast=  Toast.makeText(this, getString(R.string.editor_update_Work_failed),
+                        Toast.LENGTH_SHORT);
 
             } else {
                 mWorkCursorAdapter.notifyDataSetChanged();
+                if(toast!=null)
+                    toast.cancel();
                 // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_update_Work_successful),
-                        Toast.LENGTH_SHORT).show();
+                toast= Toast.makeText(this, getString(R.string.editor_update_Work_successful),
+                        Toast.LENGTH_SHORT);
 
             }
+            toast.show();
 
         }
 
@@ -154,27 +158,35 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             int ans= mCursor.getInt(mCursor.getColumnIndexOrThrow(WorkContract.WorkEntry.COLUMN_WORK_INITIAL_VALUE))-1;
             int fin= mCursor.getInt(mCursor.getColumnIndexOrThrow(WorkContract.WorkEntry.COLUMN_WORK_FINAL_VALUE));
             if(ans>fin || ans<0){
-                Toast.makeText(this, getString(R.string.task_already_completed),
-                        Toast.LENGTH_SHORT).show();
+                if(toast!=null)
+                    toast.cancel();
+                toast= Toast.makeText(this, getString(R.string.task_already_completed),
+                        Toast.LENGTH_SHORT);
+                toast.show();
                 return;
             }
             values.put(WorkContract.WorkEntry.COLUMN_WORK_INITIAL_VALUE, ans);
             int rowsAffected=0;
-            if(mCurrentPetUri!=null)
-                rowsAffected = getContentResolver().update(mCurrentPetUri, values, null, null);
+            if(mCurrentWorkUri!=null)
+                rowsAffected = getContentResolver().update(mCurrentWorkUri, values, null, null);
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
+                if(toast!=null)
+                    toast.cancel();
                 // If no rows were affected, then there was an error with the update.
-                Toast.makeText(this, getString(R.string.editor_update_Work_failed),
-                        Toast.LENGTH_SHORT).show();
+                toast=   Toast.makeText(this, getString(R.string.editor_update_Work_failed),
+                        Toast.LENGTH_SHORT);
 
             } else {
                 mWorkCursorAdapter.notifyDataSetChanged();
+                if(toast!=null)
+                    toast.cancel();
                 // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_update_Work_successful),
-                        Toast.LENGTH_SHORT).show();
+                toast=   Toast.makeText(this, getString(R.string.editor_update_Work_successful),
+                        Toast.LENGTH_SHORT);
 
             }
+            toast.show();
 
         }
 
@@ -182,16 +194,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void mSetDelete(){
 
             int rowsAffected;
-            rowsAffected = getContentResolver().delete(mCurrentPetUri,  null, null);
+            rowsAffected = getContentResolver().delete(mCurrentWorkUri,  null, null);
             // Show a toast message depending on whether or not the update was successful.
-            if (rowsAffected == 0) {
-                Toast.makeText(this, getString(R.string.editor_deletion_Work_failed),
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                mWorkCursorAdapter.notifyDataSetChanged();
-                Toast.makeText(this, getString(R.string.editor_deletion_Work_successful),
-                        Toast.LENGTH_SHORT).show();
-            }
+        if(toast!=null)
+            toast.cancel();
+        if (rowsAffected == 0) {
+            toast=     Toast.makeText(this, getString(R.string.editor_deletion_Work_failed),
+                        Toast.LENGTH_SHORT);
+        } else {
+            mWorkCursorAdapter.notifyDataSetChanged();
+                toast=     Toast.makeText(this, getString(R.string.editor_deletion_Work_successful),
+                        Toast.LENGTH_SHORT);
+        }
+        toast.show();
 
 
     }

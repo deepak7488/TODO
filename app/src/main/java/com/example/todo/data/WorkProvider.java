@@ -62,15 +62,15 @@ public class WorkProvider extends ContentProvider{
 //        if (!mDbHelper.db.isOpen())
 //            mDbHelper.open();
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
-            Cursor cursor = null;
+            Cursor cursor;
             int match = sUriMatcher.match(uri);
             switch (match) {
                 case WORKS:
-                    /* TODO: ACT ON PETS TABLE */
+                    /* TODO: ACT ON WorkS TABLE */
                     cursor = database.query(WorkEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                     break;
                 case WORK_ID:
-                    /* TODO: ACT ON SINGLE PET */
+                    /* TODO: ACT ON SINGLE Work */
                     selection = WorkEntry._ID + "=?";
                     selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                     cursor = database.query(WorkEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
@@ -90,15 +90,11 @@ public class WorkProvider extends ContentProvider{
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
         int match = sUriMatcher.match(uri);
-        switch (match) {
-            case WORKS:
-                /* TODO: ACT ON PETS TABLE */
-                return insertWork(uri, contentValues);
-            default:
-                /* TODO: NO MATCH FOUND */
-                throw new IllegalArgumentException("Insertion is not supported for " + uri);
-
+        if (match == WORKS) {
+            assert contentValues != null;
+            return insertWork(uri, contentValues);
         }
+        throw new IllegalArgumentException("Insertion is not supported for " + uri);
     }
 
     @Nullable
@@ -153,14 +149,15 @@ public class WorkProvider extends ContentProvider{
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case WORKS:
-//                assert contentValues != null;
+                assert contentValues != null;
                 return updateWork(uri, contentValues, selection, selectionArgs);
             case WORK_ID:
-                // For the PET_ID code, extract out the ID from the URI,
+                // For the Work_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = WorkEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                assert contentValues != null;
                 return updateWork(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
@@ -168,31 +165,31 @@ public class WorkProvider extends ContentProvider{
     }
     private int updateWork(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 
-        // TODO: Update the selected pets in the pets database table with the given ContentValues
+        // TODO: Update the selected Works in the Works database table with the given ContentValues
         if (values.containsKey(WorkEntry.COLUMN_WORK_NAME)) {
             String name = values.getAsString(WorkEntry.COLUMN_WORK_NAME);
             if (name == null) {
-                throw new IllegalArgumentException("Pet requires a name");
+                throw new IllegalArgumentException("Work requires a name");
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_GENDER} key is present,
+        // If the {@link WorkEntry#COLUMN_Work_GENDER} key is present,
         // check that the gender value is valid.
         if (values.containsKey(WorkEntry.COLUMN_WORK_INITIAL_VALUE)) {
             Integer initial_value = values.getAsInteger(WorkEntry.COLUMN_WORK_INITIAL_VALUE);
-        //            || !PetEntry.isValidGender(gender)
+        //            || !WorkEntry.isValidGender(gender)
             if (initial_value == null ) {
-                throw new IllegalArgumentException("Pet requires valid gender");
+                throw new IllegalArgumentException("Work requires valid gender");
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_WEIGHT} key is present,
+        // If the {@link WorkEntry#COLUMN_Work_WEIGHT} key is present,
         // check that the weight value is valid.
         if (values.containsKey(WorkEntry.COLUMN_WORK_FINAL_VALUE)) {
             // Check that the weight is greater than or equal to 0 kg
             Integer weight = values.getAsInteger(WorkEntry.COLUMN_WORK_FINAL_VALUE);
             if (weight != null && weight < 0) {
-                throw new IllegalArgumentException("Pet requires valid weight");
+                throw new IllegalArgumentException("Work requires valid weight");
             }
         }
         if (values.size() == 0) {
@@ -206,7 +203,7 @@ public class WorkProvider extends ContentProvider{
 
 
         if (rowsUpdated != 0) {
-            //notify all listeners that data change for pet content uri
+            //notify all listeners that data change for Work content uri
             Log.v("Updated","Hello");
             getContext().getContentResolver().notifyChange(uri, null);
         }
@@ -217,7 +214,7 @@ public class WorkProvider extends ContentProvider{
         return rowsUpdated;
     }
     private Uri insertWork(Uri uri, ContentValues values) {
-        //TODO: Insert a New pet into pets Database table with given content values
+        //TODO: Insert a New Work into Works Database table with given content values
         //Once we know the of the new row in the table return the new URI;
 
 
@@ -227,12 +224,12 @@ public class WorkProvider extends ContentProvider{
         if (name == null) {
             throw new IllegalArgumentException("Works requires a name");
         }
-//        !PetEntry.isValidGender(gender)
+//        !WorkEntry.isValidGender(gender)
         if (initial_value == null) {
-            throw new IllegalArgumentException("Pet requires valid gender");
+            throw new IllegalArgumentException("Work requires valid gender");
         }
         if (final_value==null) {
-            throw new IllegalArgumentException("Pet requires valid weight");
+            throw new IllegalArgumentException("Work requires valid weight");
         }
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         long id = database.insert(WorkEntry.TABLE_NAME, null, values);
@@ -240,7 +237,7 @@ public class WorkProvider extends ContentProvider{
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return null;
         }
-        //notify all listeners that data change for pet content uri
+        //notify all listeners that data change for Work content uri
         getContext().getContentResolver().notifyChange(uri,null);
         return ContentUris.withAppendedId(uri, id);
     }
